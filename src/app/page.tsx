@@ -10,7 +10,12 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{
+      backgroundImage: 'url(/background.png)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }}>
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
@@ -56,7 +61,7 @@ export default function Home() {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white shadow-xl rounded-lg p-6">
+        <div className="bg-white/95 backdrop-blur-sm shadow-xl rounded-lg p-6">
           {activeTab === 'single' ? (
             <UserCreationForm />
           ) : (
