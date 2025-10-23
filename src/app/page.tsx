@@ -4,7 +4,6 @@ import { useState } from 'react';
 import UserCreationForm from '@/components/UserCreationForm';
 import BulkUploadForm from '@/components/BulkUploadForm';
 import { User, Users } from 'lucide-react';
-import Image from 'next/image';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single');
@@ -18,18 +17,9 @@ export default function Home() {
     }}>
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Image
-              src="/Elastic Path FAVICON_64x64.svg"
-              alt="Elastic Path Logo"
-              width={48}
-              height={48}
-              className="mr-3"
-            />
-            <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">
-              Elastic Path Customer Portal User Creator
-            </h1>
-          </div>
+          <h1 className="text-xl font-bold text-gray-900 sm:text-2xl mb-4">
+            Elastic Path Customer Portal User Creator
+          </h1>
         </div>
 
         {/* Tab Navigation */}
