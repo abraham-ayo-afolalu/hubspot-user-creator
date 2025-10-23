@@ -12,7 +12,6 @@ import {
 } from '@/lib/errorHandler';
 import { calculateStringSimilarity, normalizeCompanyName } from '@/lib/utils';
 import { checkRateLimit, validateAndSanitizeInput, sanitizeErrorMessage, getClientIdentifier } from '@/lib/security';
-import { AuditLogger } from '@/lib/audit';
 
 const hubspotClient = new Client({ accessToken: process.env.HUBSPOT_ACCESS_TOKEN });
 
@@ -190,7 +189,7 @@ export async function POST(request: NextRequest) {
     // Rate limiting check
     const rateLimitResult = checkRateLimit(clientId, 'CREATE_USER');
     if (!rateLimitResult.allowed) {
-      AuditLogger.logRateLimitExceeded(clientId, 'CREATE_USER', userAgent);
+      console.log(`Rate limit exceeded for ${clientId} - CREATE_USER`);
       throw new CustomError(
         'Too many requests. Please try again later.',
         ErrorCodes.RATE_LIMIT_EXCEEDED,
@@ -236,7 +235,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!validation.valid) {
-      AuditLogger.logValidationError(clientId, validation.errors, userAgent);
+      console.log(`Validation error for ${clientId}:`, validation.errors);
       throw new CustomError(
         `Validation failed: ${validation.errors.join(', ')}`,
         ErrorCodes.VALIDATION_ERROR,
@@ -275,16 +274,7 @@ export async function POST(request: NextRequest) {
       const hubspotError = handleHubSpotError(createError);
       
       // Log the failed creation
-      AuditLogger.logUserCreation(
-        clientId,
-        { firstName: cleanFirstName!, lastName: cleanLastName!, email: cleanEmail! },
-        companyName || cleanOrgName || 'Unknown',
-        false,
-        undefined,
-        hubspotError.message,
-        undefined,
-        userAgent
-      );
+      console.log(`Failed user creation for ${clientId}:`, hubspotError.message); 
       
       throw hubspotError;
     }
@@ -299,16 +289,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log successful user creation
-    AuditLogger.logUserCreation(
-      clientId,
-      { firstName: cleanFirstName!, lastName: cleanLastName!, email: cleanEmail! },
-      companyName || cleanOrgName || 'Unknown',
-      true,
-      contact.id,
-      undefined,
-      undefined, // userId from SSO when available
-      userAgent
-    );
+    console.log(`Successful user creation for ${clientId}: ${cleanEmail}`); 
 
     return createSuccessResponse({
       contactId: contact.id,
@@ -332,20 +313,7 @@ export async function POST(request: NextRequest) {
 
     // Log failed user creation attempt if we have body data
     if (body) {
-      AuditLogger.logUserCreation(
-        clientId,
-        { 
-          firstName: body.firstName || 'Unknown', 
-          lastName: body.lastName || 'Unknown', 
-          email: body.email || 'Unknown' 
-        },
-        body.organizationName || 'Unknown',
-        false,
-        undefined,
-        error.message,
-        undefined,
-        userAgent
-      );
+      console.log(`Failed user creation attempt for ${clientId}:`, error.message); 
     }
 
     // Handle CustomError instances

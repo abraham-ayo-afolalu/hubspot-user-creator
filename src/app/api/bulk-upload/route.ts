@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Client } from '@hubspot/api-client';
 import { checkRateLimit, validateBulkUpload, sanitizeErrorMessage, getClientIdentifier } from '@/lib/security';
-import { AuditLogger } from '@/lib/audit';
 import { 
   CustomError, 
   ErrorCodes, 
@@ -183,7 +182,7 @@ export async function POST(request: NextRequest) {
     // Rate limiting check
     const rateLimitResult = checkRateLimit(clientId, 'BULK_UPLOAD');
     if (!rateLimitResult.allowed) {
-      AuditLogger.logRateLimitExceeded(clientId, 'BULK_UPLOAD', userAgent);
+      console.log(`Rate limit exceeded for ${clientId} - BULK_UPLOAD`);
       throw new CustomError(
         'Too many bulk upload requests. Please try again later.',
         ErrorCodes.RATE_LIMIT_EXCEEDED,
@@ -349,18 +348,8 @@ export async function POST(request: NextRequest) {
       message = `Bulk upload failed. No users were created. ${result.failed} users failed processing.`;
     }
 
-    // Log bulk upload completion with detailed results
-    AuditLogger.logBulkUpload(
-      clientId,
-      result.total,
-      organizationName,
-      result.successful,
-      result.failed,
-      allSuccessful,
-      result.failed > 0 ? `${result.failed} users failed to create` : undefined,
-      undefined, // userId from SSO when available
-      userAgent
-    );
+    // Log bulk upload completion
+    console.log(`Bulk upload completed for ${clientId}: ${result.successful}/${result.total} users created successfully`);
 
     return createSuccessResponse({
       ...result,
@@ -391,17 +380,7 @@ export async function POST(request: NextRequest) {
 
     // Log failed bulk upload attempt
     if (body) {
-      AuditLogger.logBulkUpload(
-        clientId,
-        body.users?.length || 0,
-        body.organizationName || 'Unknown',
-        0,
-        body.users?.length || 0,
-        false,
-        error.message,
-        undefined,
-        userAgent
-      );
+      console.log(`Failed bulk upload attempt for ${clientId}: ${body.users?.length || 0} users - ${error.message}`);
     }
 
     // Handle CustomError instances

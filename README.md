@@ -6,6 +6,7 @@ A modern web application built with Next.js for creating users in HubSpot with i
 
 - **User Creation**: Create contacts in HubSpot with first name, last name, and organization
 - **Smart Organization Matching**: Automatically finds the closest matching organization in HubSpot
+- **Bulk Upload**: Upload multiple users via CSV file with validation and progress tracking
 - **Active in Okta Field**: Automatically sets the `active_in_okta` custom field to true
 - **Modern UI**: Clean, responsive interface built with Tailwind CSS
 - **Error Handling**: Comprehensive error handling with user-friendly messages
@@ -77,12 +78,18 @@ Open [http://localhost:3000](http://localhost:3000) to access the application.
 ```
 src/
 ├── app/
-│   ├── api/create-user/route.ts    # API endpoint for user creation
-│   └── page.tsx                    # Main application page
+│   ├── api/
+│   │   ├── create-user/route.ts        # Single user creation API
+│   │   ├── bulk-upload/route.ts        # Bulk user upload API
+│   │   └── search-organizations/route.ts # Organization search API
+│   └── page.tsx                        # Main application page
 ├── components/
-│   └── UserCreationForm.tsx        # Form component
+│   ├── UserCreationForm.tsx            # Single user form
+│   └── BulkUploadForm.tsx              # Bulk upload form
 └── lib/
-    └── utils.ts                    # Utility functions for string matching
+    ├── utils.ts                        # Utility functions for string matching
+    ├── errorHandler.ts                 # Error handling utilities
+    └── security.ts                     # Security utilities
 ```
 
 ## API Endpoints

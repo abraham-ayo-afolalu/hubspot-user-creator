@@ -6,7 +6,6 @@ Create a `.env.local` file in the root directory with your HubSpot API credentia
 
 ```env
 HUBSPOT_ACCESS_TOKEN=your_hubspot_private_app_access_token_here
-ADMIN_PASSWORD=your_secure_admin_password_here
 ```
 
 ## Getting Your HubSpot Access Token

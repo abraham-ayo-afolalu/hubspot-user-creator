@@ -11,7 +11,6 @@ import {
   logError
 } from '@/lib/errorHandler';
 import { checkRateLimit, getClientIdentifier } from '@/lib/security';
-import { AuditLogger } from '@/lib/audit';
 
 const hubspotClient = new Client({ accessToken: process.env.HUBSPOT_ACCESS_TOKEN });
 
@@ -169,7 +168,7 @@ export async function POST(request: NextRequest) {
     // Rate limiting check
     const rateLimitResult = checkRateLimit(clientId, 'SEARCH_ORG');
     if (!rateLimitResult.allowed) {
-      AuditLogger.logRateLimitExceeded(clientId, 'SEARCH_ORG', userAgent);
+      console.log(`Rate limit exceeded for ${clientId} - SEARCH_ORG`);
       throw new CustomError(
         'Too many search requests. Please try again later.',
         ErrorCodes.RATE_LIMIT_EXCEEDED,
@@ -258,13 +257,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log successful organization search
-    AuditLogger.logOrganizationSearch(
-      clientId,
-      organizationName,
-      rankedCompanies.length,
-      undefined, // userId from SSO when available
-      userAgent
-    );
+    console.log(`Organization search for ${clientId}: "${organizationName}" - found ${rankedCompanies.length} matches`);
 
     return createSuccessResponse({
       matches: rankedCompanies,
