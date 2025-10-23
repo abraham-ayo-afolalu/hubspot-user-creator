@@ -145,7 +145,7 @@ export default function UserCreationForm() {
           let userMessage = errorData.error?.message || errorData.message || `HTTP ${res.status}: ${res.statusText}`;
           
           if (errorData.error?.code === 'USER_ALREADY_EXISTS' || res.status === 409) {
-            userMessage = `A user with the email "${formData.email}" already exists in HubSpot. Please use a different email address or contact support if this is unexpected.`;
+            userMessage = `A user with the email "${formData.email}" already exists. Please use a different email address or contact support at access@elasticpath.com if this is unexpected.`;
           } else if (errorData.error?.code === 'AUTHENTICATION_ERROR') {
             userMessage = 'HubSpot integration is not properly configured. Please contact your administrator.';
           } else if (errorData.error?.code === 'RATE_LIMIT_EXCEEDED') {
