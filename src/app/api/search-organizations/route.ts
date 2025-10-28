@@ -23,7 +23,7 @@ interface Company {
   similarity?: number;
 }
 
-// Function to search for companies in HubSpot using basic API
+// Function to search for companies in HubSpot using Search API
 async function searchCompanies(searchTerm: string): Promise<Company[]> {
   if (!searchTerm?.trim()) {
     throw new CustomError(
@@ -42,15 +42,36 @@ async function searchCompanies(searchTerm: string): Promise<Company[]> {
   }
 
   try {
-    // Use the basic API to get companies and filter manually
-    const apiResponse = await hubspotClient.crm.companies.basicApi.getPage(100, undefined, ['name', 'domain']);
+    // Use HubSpot's Search API to search companies by name
+    // Filter by Active status only
+    const searchRequest = {
+      query: searchTerm.trim(),
+      filterGroups: [
+        {
+          filters: [
+            {
+              propertyName: 'status__c',
+              operator: 'EQ' as any,
+              value: 'Active'
+            }
+          ]
+        }
+      ],
+      properties: ['name', 'domain', 'status__c'],
+      limit: 100,
+      sorts: ['name']
+    } as any;
+
+    const apiResponse = await hubspotClient.crm.companies.searchApi.doSearch(searchRequest);
     
     if (!apiResponse || !apiResponse.results) {
-      logError(new Error('No companies found in HubSpot response'), { searchTerm });
+      console.log('No companies found in HubSpot search response for:', searchTerm);
       return [];
     }
     
-    // Get all companies and map them first
+    console.log(`HubSpot Search API returned ${apiResponse.results.length} results for "${searchTerm}"`);
+    
+    // Map the search results
     const allCompanies: Company[] = apiResponse.results
       .filter(result => result.id && result.properties?.name) // Ensure valid data
       .map(result => ({
@@ -62,57 +83,11 @@ async function searchCompanies(searchTerm: string): Promise<Company[]> {
       }));
     
     if (allCompanies.length === 0) {
-      logError(new Error('No valid companies found in HubSpot'), { 
-        searchTerm,
-        totalResults: apiResponse.results.length 
-      });
+      console.log('No valid companies found after filtering:', searchTerm);
       return [];
     }
     
-    // Use more restrictive filtering - focus on meaningful matches
-    const normalizedSearch = normalizeCompanyName(searchTerm);
-    const searchWords = normalizedSearch.toLowerCase().split(/\s+/).filter(word => word.length > 2);
-    
-    if (searchWords.length === 0) {
-      throw new CustomError(
-        'Search term must contain meaningful words (at least 3 characters)',
-        ErrorCodes.VALIDATION_ERROR,
-        400
-      );
-    }
-    
-    const candidateCompanies = allCompanies.filter(company => {
-      try {
-        const normalizedCompanyName = normalizeCompanyName(company.properties.name);
-        const companyWords = normalizedCompanyName.toLowerCase().split(/\s+/).filter(word => word.length > 2);
-        
-        // Only include if there's a meaningful word overlap or strong similarity
-        const hasWordOverlap = searchWords.some(searchWord => 
-          companyWords.some(companyWord => 
-            companyWord.includes(searchWord) || searchWord.includes(companyWord)
-          )
-        );
-        
-        // Or if the company name contains the search term (for exact/partial matches)
-        const directMatch = normalizedCompanyName.toLowerCase().includes(normalizedSearch.toLowerCase()) ||
-                           normalizedSearch.toLowerCase().includes(normalizedCompanyName.toLowerCase());
-        
-        // Only consider companies with high similarity (> 0.5) if no word overlap
-        const similarity = calculateStringSimilarity(normalizedSearch, normalizedCompanyName);
-        const highSimilarity = similarity > 0.5;
-        
-        return hasWordOverlap || directMatch || highSimilarity;
-      } catch (filterError) {
-        logError(filterError as Error, { 
-          companyId: company.id, 
-          companyName: company.properties.name,
-          searchTerm 
-        });
-        return false; // Exclude companies that cause filtering errors
-      }
-    });
-    
-    return candidateCompanies.slice(0, 20); // Get more candidates for ranking
+    return allCompanies;
   } catch (error: any) {
     const hubspotError = handleHubSpotError(error);
     logError(hubspotError, { searchTerm, operation: 'searchCompanies' });
