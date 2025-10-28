@@ -67,7 +67,7 @@ async function createContact(user: CsvUser, organizationId: string, organization
     const basicContactProperties: any = {
       firstname: user.firstName.trim(),
       lastname: user.lastName.trim(),
-      active_in_okta: 'yes',
+      active_in_okta: true,
       lifecyclestage: 'lead'
       // NOTE: Intentionally NOT including email in initial creation to prevent domain matching
     };

@@ -101,7 +101,7 @@ async function createContact(firstName: string, lastName: string, email: string,
     const basicContactProperties: any = {
       firstname: firstName,
       lastname: lastName,
-      active_in_okta: 'yes',
+      active_in_okta: true,
       lifecyclestage: 'lead'
       // NOTE: Intentionally NOT including email in initial creation to prevent domain matching
     };
