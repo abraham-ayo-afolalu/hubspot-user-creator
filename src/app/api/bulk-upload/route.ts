@@ -67,7 +67,6 @@ async function createContact(user: CsvUser, organizationId: string, organization
     const basicContactProperties: any = {
       firstname: user.firstName.trim(),
       lastname: user.lastName.trim(),
-      active_in_okta: true,
       lifecyclestage: 'lead'
       // NOTE: Intentionally NOT including email in initial creation to prevent domain matching
     };
@@ -79,7 +78,8 @@ async function createContact(user: CsvUser, organizationId: string, organization
     // Step 2: Update the contact with email and company name after creation
     if (apiResponse.id) {
       const updateProperties: any = {
-        email: user.email.trim().toLowerCase()
+        email: user.email.trim().toLowerCase(),
+        active_in_okta: true
       };
 
       // Set the company name on the contact for display in profile

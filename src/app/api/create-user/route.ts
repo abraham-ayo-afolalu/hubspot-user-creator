@@ -101,7 +101,6 @@ async function createContact(firstName: string, lastName: string, email: string,
     const basicContactProperties: any = {
       firstname: firstName,
       lastname: lastName,
-      active_in_okta: true,
       lifecyclestage: 'lead'
       // NOTE: Intentionally NOT including email in initial creation to prevent domain matching
     };
@@ -118,7 +117,8 @@ async function createContact(firstName: string, lastName: string, email: string,
       console.log('Updating contact with email and company information...');
       
       const updateProperties: any = {
-        email: email
+        email: email,
+        active_in_okta: true
       };
 
       // If we have a company name, set it on the contact for display in profile
