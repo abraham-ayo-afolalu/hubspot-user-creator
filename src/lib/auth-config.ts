@@ -1,22 +1,3 @@
-import { OktaAuth } from '@okta/okta-auth-js';
-
-// Okta Auth configuration - only create on client side
-export const oktaAuthConfig = {
-  issuer: process.env.NEXT_PUBLIC_OKTA_ISSUER || '',
-  clientId: process.env.NEXT_PUBLIC_OKTA_CLIENT_ID || '',
-  redirectUri: process.env.NEXT_PUBLIC_OKTA_REDIRECT_URI || '',
-  scopes: ['openid', 'profile', 'email'],
-  pkce: true,
-  tokenManager: {
-    storage: 'localStorage',
-  },
-};
-
-// Create Okta Auth instance (only on client side)
-export const oktaAuth = typeof window !== 'undefined' 
-  ? new OktaAuth(oktaAuthConfig)
-  : null;
-
 // Server-side auth utilities
 export const AUTH_COOKIE_NAME = 'okta-session';
 export const SESSION_DURATION = 60 * 60 * 24; // 24 hours in seconds
