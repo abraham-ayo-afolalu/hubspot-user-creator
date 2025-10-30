@@ -3,24 +3,28 @@
 import { useState } from 'react';
 import UserCreationForm from '@/components/UserCreationForm';
 import BulkUploadForm from '@/components/BulkUploadForm';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import UserProfile from '@/components/UserProfile';
 import { User, Users } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single');
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{
-      backgroundImage: 'url(/background.png)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat'
-    }}>
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-xl font-bold text-gray-900 sm:text-2xl mb-4">
-            Elastic Path Customer Portal User Creator
-          </h1>
-        </div>
+    <ProtectedRoute>
+      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{
+        backgroundImage: 'url(/background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
+        <div className="max-w-2xl mx-auto">
+          <UserProfile />
+          <div className="text-center mb-8">
+            <h1 className="text-xl font-bold text-gray-900 sm:text-2xl mb-4">
+              Elastic Path Customer Portal User Creator
+            </h1>
+          </div>
 
         {/* Tab Navigation */}
         <div className="mb-6">
@@ -60,5 +64,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
