@@ -4,7 +4,6 @@ import { useState } from 'react';
 import UserCreationForm from '@/components/UserCreationForm';
 import BulkUploadForm from '@/components/BulkUploadForm';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import UserProfile from '@/components/UserProfile';
 import { User, Users } from 'lucide-react';
 
 export default function Home() {
@@ -19,7 +18,6 @@ export default function Home() {
         backgroundRepeat: 'no-repeat'
       }}>
         <div className="max-w-2xl mx-auto">
-          <UserProfile />
           <div className="text-center mb-8">
             <h1 className="text-xl font-bold text-gray-900 sm:text-2xl mb-4">
               Elastic Path Customer Portal User Creator
