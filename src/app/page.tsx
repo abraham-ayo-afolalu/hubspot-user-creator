@@ -1,14 +1,18 @@
 'use client';
 
 import { useState } from 'react';
+import { signOut, useSession } from 'next-auth/react';
 import UserCreationForm from '@/components/UserCreationForm';
 import BulkUploadForm from '@/components/BulkUploadForm';
-import { User, Users } from 'lucide-react';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import { User, Users, LogOut } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single');
+  const { data: session } = useSession();
 
   return (
+    <ProtectedRoute>
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{
       backgroundImage: 'url(/background.png)',
       backgroundSize: 'cover',
@@ -17,9 +21,24 @@ export default function Home() {
     }}>
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-xl font-bold text-gray-900 sm:text-2xl mb-4">
-            Elastic Path Customer Portal User Creator
-          </h1>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-xl font-bold text-gray-900 sm:text-2xl flex-1">
+              Elastic Path Customer Portal User Creator
+            </h1>
+            <button
+              onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+              title="Sign out"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Sign out</span>
+            </button>
+          </div>
+          {session?.user?.email && (
+            <p className="text-sm text-gray-600">
+              Signed in as {session.user.email}
+            </p>
+          )}
         </div>
 
         {/* Tab Navigation */}
@@ -60,5 +79,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
