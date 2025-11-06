@@ -26,7 +26,7 @@ export default function Home() {
               Elastic Path Customer Portal User Creator
             </h1>
             <button
-              onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+              onClick={() => signOut({ callbackUrl: '/' })}
               className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
               title="Sign out"
             >
