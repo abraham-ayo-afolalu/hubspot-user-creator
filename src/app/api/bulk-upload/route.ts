@@ -406,7 +406,10 @@ function getCommonErrors(errors: UploadError[]): { [key: string]: number } {
   
   errors.forEach(error => {
     const errorType = error.error.toLowerCase();
-    if (errorType.includes('email already exists') || errorType.includes('409')) {
+    if (errorType.includes('email already exists') || 
+        errorType.includes('409') || 
+        errorType.includes('already exists in hubspot') ||
+        errorType.includes('already has that value')) {
       errorCounts['Duplicate emails'] = (errorCounts['Duplicate emails'] || 0) + 1;
     } else if (errorType.includes('invalid email')) {
       errorCounts['Invalid email format'] = (errorCounts['Invalid email format'] || 0) + 1;

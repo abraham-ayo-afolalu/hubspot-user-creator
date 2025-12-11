@@ -69,6 +69,21 @@ export function handleHubSpotError(error: any): CustomError {
     
     switch (status) {
       case 400:
+        // Check if this is a duplicate email error
+        const errorMessage = data?.message || '';
+        if (errorMessage.includes('already has that value') && errorMessage.includes('email')) {
+          // Extract email from error message if possible
+          const emailMatch = errorMessage.match(/value=([^\s}]+)/);
+          const email = emailMatch ? emailMatch[1] : 'this email address';
+          
+          return new CustomError(
+            `A contact with ${email} already exists in HubSpot. Please use a different email address.`,
+            ErrorCodes.USER_ALREADY_EXISTS,
+            409, // Use 409 status code for duplicate resources
+            data
+          );
+        }
+        
         return new CustomError(
           `Invalid request: ${data?.message || 'Bad request'}`,
           ErrorCodes.VALIDATION_ERROR,
